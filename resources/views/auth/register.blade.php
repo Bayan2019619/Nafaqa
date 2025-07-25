@@ -1,18 +1,55 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" dir="rtl">
         @csrf
 
         <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+<div>
+    <x-input-label for="name" :value="__('Name')" />
+    <x-text-input 
+        id="name" 
+        class="block mt-1 w-full" 
+        type="text" 
+        name="name" 
+        pattern="[\u0600-\u06FF\s]+" 
+        title="يرجى إدخال اسم يحتوي على حروف عربية فقط" 
+        placeholder="الاسم باللغة العربية فقط" 
+        :value="old('name')" 
+        required 
+        autofocus 
+        autocomplete="name" 
+        dir="rtl" 
+    />
+    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+</div>
+
+
+             <!-- Phone -->
+<div class="mt-4">
+    <x-input-label for="phone" :value="__('Phone')" />
+    <x-text-input 
+        id="phone" 
+        dir="rtl" 
+        maxlength="10"
+        class="block mt-1 w-full" 
+        type="tel" 
+        name="phone" 
+        :value="old('phone')" 
+        placeholder="09XXXXXXXX"  
+        required 
+        autofocus 
+        autocomplete="username"
+        pattern="09[0-9]{8}"
+        title="يرجى إدخال رقم هاتف يبدأ بـ 09 ويتكون من 10 أرقام"
+    />
+    <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+</div>
+
+
 
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required  />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
