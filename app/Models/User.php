@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Enums\StatusEnum;
 
 class User extends Authenticatable
 {
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -43,6 +45,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'status' => StatusEnum::class,
             'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',

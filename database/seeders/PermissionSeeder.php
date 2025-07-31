@@ -1,35 +1,66 @@
 <?php
-
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Define permissions
-        $permissions = [
-            'view users',
-            'edit users',
-            'delete users',
-            'create users',
-        ];
+        $permissions = ['view', 'create', 'edit', 'status', 'delete'];
+        $features = ['user', 'profile_role', 'case'];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        $allPermissionNames = [];
+
+        foreach ($features as $feature) {
+            foreach ($permissions as $action) {
+                $permissionName = "{$feature}.{$action}";
+                Permission::firstOrCreate([
+                    'name' => $permissionName,
+                    'guard_name' => 'web',
+                ]);
+                $allPermissionNames[] = $permissionName;
+            }
         }
 
-        // Create roles and assign existing permissions
+   
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $adminRole->syncPermissions($permissions);
+        $adminRole->syncPermissions($allPermissionNames); 
 
-        $editorRole = Role::firstOrCreate(['name' => 'editor']);
-        $editorRole->syncPermissions(['view users', 'edit users']);
+        $admin = User::firstOrCreate(
+            ['phone' => '0912444693'],
+            [
+                'name' => 'Murad AlBarki',
+                'email' => 'pe.murad@gmail.com',
+                'password' => bcrypt('@password'),
+            ]
+        );
+
+        if (!$admin->hasRole('admin')) {
+            $admin->assignRole($adminRole);
+        }
+
+        $user1 = User::firstOrCreate(
+            ['phone' => '0954440744'],
+            [
+                'name' => 'Jhon doe',
+                'email' => 'test@test.com',
+                'password' => bcrypt('@password'),
+            ]);
+
+        $user1 = User::firstOrCreate(
+            ['phone' => '0943383941'],
+            [
+                'name' => 'Arthur Morgan',
+                'email' => 'arth@test.com',
+                'password' => bcrypt('@password'),
+            ]);
+    
     }
 }
