@@ -1,5 +1,13 @@
 [
   {
+    "english_name": "Libya",
+    "arabic_name": "ليبيا",
+    "alpha2_code": "LY",
+    "alpha3_code": "LBY",
+    "phone_code": "218"
+  },
+  
+  {
     "english_name": "Afghanistan",
     "arabic_name": "أفغانستان",
     "alpha2_code": "AF",
@@ -874,13 +882,7 @@
     "alpha3_code": "LBR",
     "phone_code": "231"
   },
-  {
-    "english_name": "Libya",
-    "arabic_name": "ليبيا",
-    "alpha2_code": "LY",
-    "alpha3_code": "LBY",
-    "phone_code": "218"
-  },
+  
   {
     "english_name": "Liechtenstein",
     "arabic_name": "ليختنشتاين",

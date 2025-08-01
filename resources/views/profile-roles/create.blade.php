@@ -5,7 +5,7 @@
 
     <form action="{{ route('profile-roles.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    @include('profile_roles.form')
+    @include('profile-roles.form')
     <button type="submit">Save</button>
 </form>
 </x-app-layout>

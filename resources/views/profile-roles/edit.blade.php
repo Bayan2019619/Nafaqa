@@ -5,7 +5,7 @@
 
     <form action="{{ route('profile-roles.update', $profileRole) }}" method="POST">
         @csrf @method('PUT')
-        @include('profile_roles.form')
+        @include('profile-roles.form')
         <button type="submit">Update</button>
     </form>
 @endsection

@@ -3,133 +3,135 @@
 namespace App\Http\Controllers;
 
 use App\DocumentTypeEnum;
+use App\Http\Requests\StoreProfileRoleRequest;
+use App\Http\Requests\UpdateProfileRoleRequest;
 use App\Models\ProfileRole;
 use App\Models\Country;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ProfileRoleController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
-        $this->authorize('viewAny', ProfileRole::class);
         $user = auth()->user();
 
-        if ($user->can('profileRole.view') || $user->hasRole('admin')) {
-            $profileRoles = ProfileRole::with('user')->get();
-            return view('profile_roles.index', compact('profileRoles'));
-        } 
+        // Normal users should not access index at all
+        if (!$user->can('viewAny', ProfileRole::class)) {
+            abort(403);
+        }
 
-        return view('profile_roles.show', compact('profileRole'));
+        $profileRoles = ProfileRole::with('user')->get();
+
+        return view('profile-roles.index', compact('profileRoles'));
     }
-
 
     public function create()
     {
-         if (auth()->user()->profileRole) {
-        return redirect()->route('profile-roles.index')
-            ->with('error', 'You already have a profile.');
-        } 
+        $this->authorize('create', ProfileRole::class);
+
+        if (auth()->user()->profileRole) {
+            return redirect()->route('dashboard')
+                ->with('error', __('You already have a profile.'));
+        }
 
         $countries = Country::all();
         $users = User::all();
         $documentTypes = DocumentTypeEnum::cases();
-        return view('profile_roles.create', compact(['users', 'countries', 'documentTypes']));
+
+        return view('profile-roles.create', compact(['users', 'countries', 'documentTypes']));
     }
 
-    public function store(Request $request)
+    public function store(StoreProfileRoleRequest $request, User $user = null)
     {
-         if (auth()->user()->profileRole) {
-        return redirect()->route('profile-roles.index')
-            ->with('error', 'You already have a profile.');
+        $targetUser = $user ?? auth()->user();
+
+        if ($targetUser->profileRole) {
+            return redirect()->route('dashboard')
+                ->with('error', __('This user already has a profile.'));
         }
-    
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'first_name' => 'required|string',
-            'mid_name' => 'nullable|string',
-            'last_name' => 'required|string',
-            'date_of_birth' => 'required|date',
-            'national_no' => 'nullable|unique:profile_roles,national_no',
-            'IBAN' => 'required|unique:profile_roles,IBAN',
-            'document_no' => 'required|unique:profile_roles,document_no',
-            'document_url' => 'required|string',
-            'document_type' => 'required|string',
-            'nationality_id' => 'required|exists:countries,id',
-            'status' => 'required|boolean',
-        ]);
+
+        $validated = $request->validated();
+        $validated['gender'] = $request->input('gender');
+        $validated['document_file_url'] = $request->file('document_file')->store('documents', 'public');
+        $validated['user_id'] = $targetUser->id;
 
         $profileRole = ProfileRole::create($validated);
 
-        activity()->causedBy(auth()->user())
-        ->performedOn($profileRole)
-        ->log('profile created');
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($profileRole)
+            ->log('Profile created for user: ' . $targetUser->id);
 
-
-        return redirect()->route('profile-roles.index')->with('success', 'Profile Role created successfully.');
+        return redirect()->route('dashboard')->with('success', __('Profile created successfully.'));
     }
 
     public function show(ProfileRole $profileRole)
     {
         $this->authorize('view', $profileRole);
-
-        return view('profile_roles.show', compact('profileRole'));
+        $nationalityName = $profileRole->nationality->name;
+        return view('profile-roles.show', compact('profileRole', 'nationalityName'));
     }
 
     public function edit(ProfileRole $profileRole)
     {
+        $this->authorize('update', $profileRole);
+
         $users = User::all();
         $countries = Country::all();
-        return view('profile_roles.edit', compact('profileRole', 'users', 'countries'));
+
+        return view('profile-roles.edit', compact('profileRole', 'users', 'countries'));
     }
 
-    public function update(Request $request, ProfileRole $profileRole)
+    public function update(UpdateProfileRoleRequest $request, ProfileRole $profileRole)
     {
-        $validated = $request->validate([
-            'first_name' => 'sometimes|string',
-            'mid_name' => 'sometimes|nullable|string',
-            'last_name' => 'sometimes|string',
-            'date_of_birth' => 'sometimes|date',
-            'national_no' => 'nullable|unique:profile_roles,national_no,' . $profileRole->id,
-            'IBAN' => 'sometimes|unique:profile_roles,IBAN,' . $profileRole->id,
-            'document_no' => 'sometimes|unique:profile_roles,document_no,' . $profileRole->id,
-            'document_url' => 'sometimes|string',
-            'document_type' => 'sometimes|string',
-            'nationality_id' => 'sometimes|exists:countries,id',
-            'status' => 'sometimes|boolean',
-        ]);
+        $this->authorize('update', $profileRole);
+
+        $validated = $request->validated();
+
+        if ($request->hasFile('document_file')) {
+            $validated['document_file_url'] = $request->file('document_file')->store('documents', 'public');
+        }
 
         $profileRole->update($validated);
 
-        activity()->causedBy(auth()->user())
-        ->performedOn($profileRole)
-        ->log('profile updated');
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($profileRole)
+            ->log('Profile updated for user: ' . $profileRole->user_id);
 
-        return redirect()->route('profile-roles.index')->with('success', 'Profile Role updated successfully.');
+        return redirect()->route('dashboard')->with('success', __('Profile updated successfully.'));
     }
 
     public function toggleStatus(ProfileRole $profileRole)
     {
-        $this->authorize('changeStatus', $profileRole);
+        // Authorization handled by route middleware
 
         $profileRole->status = !$profileRole->status;
         $profileRole->save();
 
-        activity()->causedBy(auth()->user())
+        activity()
+            ->causedBy(auth()->user())
             ->performedOn($profileRole)
-            ->log('Toggled status');
+            ->log('Toggled status for user: ' . $profileRole->user_id);
 
-        return back()->with('success', 'Status updated.');
+        return back()->with('success', __('Status updated.'));
     }
-
 
     public function destroy(ProfileRole $profileRole)
     {
+        $this->authorize('delete', $profileRole);
+
         $profileRole->delete();
 
-        activity()->causedBy(auth()->user())
-        ->performedOn($profileRole)
-        ->log('profile deleted');
-        return redirect()->route('profile-roles.index')->with('success', 'Profile Role deleted successfully.');
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($profileRole)
+            ->log('Profile deleted for user: ' . $profileRole->user_id);
+
+        return redirect()->route('dashboard')->with('success', __('Profile deleted successfully.'));
     }
 }

@@ -25,6 +25,7 @@ class ProfileRole extends Model
         'document_no',
         'document_file_url',
         'status',
+        'gender'
     ];
 
     protected $casts = [

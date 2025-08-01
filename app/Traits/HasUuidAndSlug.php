@@ -15,18 +15,19 @@ trait HasUuidAndSlug
                 $model->uuid = (string) Str::uuid();
             }
 
-            // Generate slug from name if not set
-            if (empty($model->slug) && !empty($model->name)) {
-                $model->slug = Str::slug($model->name);
+                    // Generate slug from name if not set
+                if (empty($model->slug)) {
+            $base = $model->name ?? $model->first_name . '-' . $model->last_name;
+            $model->slug = Str::slug($base);
 
-                // Ensure uniqueness of slug
-                $original = $model->slug;
-                $count = 1;
-                while (static::where('slug', $model->slug)->exists()) {
-                    $model->slug = "{$original}-{$count}";
-                    $count++;
-                }
+            // Ensure uniqueness
+            $original = $model->slug;
+            $count = 1;
+            while (static::where('slug', $model->slug)->exists()) {
+                $model->slug = "{$original}-{$count}";
+                $count++;
             }
+        }
         });
     }
 

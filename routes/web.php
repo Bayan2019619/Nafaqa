@@ -20,7 +20,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('profile-roles', ProfileRoleController::class);
     Route::resource('users', UserController::class);
-    Route::patch('/profile-roles/{profileRole}/toggle-status', [ProfileRoleController::class, 'toggleStatus'])->name('profile-roles.toggle-status');
+    Route::post('/users/{user}/profile-roles/store', [ProfileRoleController::class, 'store'])->middleware(['auth', 'can:create-profile-for-users']);
+   Route::patch('/profile-roles/{profileRole}/toggle-status', [ProfileRoleController::class, 'toggleStatus'])
+    ->middleware('can:changeStatus,profileRole')
+    ->name('profile-roles.toggleStatus');
+
 
 });
 

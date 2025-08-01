@@ -1,5 +1,6 @@
 <?php
 
+use App\GenderEnum;
 use App\StatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->string('document_no')->unique();
             $table->string('document_file_url');
             $table->tinyInteger('status')->default(StatusEnum::Pending->value);
+            $table->tinyInteger('gender');
             $table->timestamps();
             $table->softDeletes();
         });

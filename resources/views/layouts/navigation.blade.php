@@ -25,18 +25,26 @@
                     </x-nav-link>
                 @endif
 
+                                    
                     <!-- Normal user -->
-                @if(auth()->user()->profileRole()->exists())
-                    <x-nav-link :href="route('profile-roles.show', auth()->user()->profileRole->id)" :active="request()->routeIs('profile-roles.show')">
-                        {{ __('My Profile') }}
-                    </x-nav-link>
-                @else
-                    <x-nav-link :href="route('profile-roles.create')" :active="request()->routeIs('profile-roles.create')">
-                        {{ __('Create')}} {{__('Profile') }}
-                    </x-nav-link>
-                @endif
+                    @if(auth()->user()->getAllPermissions()->isEmpty())
+                     @endif
+                        @if(auth()->user()->profileRole()->exists())
+                            <x-nav-link :href="route('profile-roles.show', auth()->user()->profileRole->slug)" 
+                                        :active="request()->routeIs('profile-roles.show')">
+                                {{ __('My Profile') }}
+                            </x-nav-link>
+                        @else
+                            <x-nav-link :href="route('profile-roles.create')" 
+                                        :active="request()->routeIs('profile-roles.create')">
+                                {{ __('Create') }} {{ __('Profile') }}
+                            </x-nav-link>
+                        @endif
+                   
+
                         </div>
                     </div>
+             
 
 
 
