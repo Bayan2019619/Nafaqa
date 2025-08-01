@@ -25,7 +25,7 @@ class ProfileRolePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('profileRole.view');
+        return $user->can('profileRole.viewAny');
     }
 
     /**
@@ -33,10 +33,7 @@ class ProfileRolePolicy
      */
     public function view(User $user, ProfileRole $profileRole)
     {
-        // Admin already allowed by before()
-
-        // Allow if user owns this profile
-        return $user->id === $profileRole->user_id;
+        return ($user->id === $profileRole->user_id || $user->can('profileRole.view'));
     }
 
     /**
@@ -44,7 +41,6 @@ class ProfileRolePolicy
      */
     public function create(User $user)
     {
-        // Allow only if user does not already have a profile role
         return $user->profileRole === null;
     }
 
@@ -54,7 +50,7 @@ class ProfileRolePolicy
     public function update(User $user, ProfileRole $profileRole)
     {
         // Owner or admin (admin handled in before)
-        return $user->id === $profileRole->user_id;
+        return ($user->id === $profileRole->user_id || $user->can('profileRole.update'));
     }
 
     /**
@@ -63,7 +59,7 @@ class ProfileRolePolicy
     public function delete(User $user, ProfileRole $profileRole)
     {
         // Owner or admin (admin handled in before)
-        return $user->id === $profileRole->user_id;
+        return ($user->id === $profileRole->user_id || $user->can('profileRole.delete'));
     }
 
     /**
@@ -72,6 +68,6 @@ class ProfileRolePolicy
     public function changeStatus(User $user, ProfileRole $profileRole)
     {
         // Only users with 'profileRole.verify' permission or admin
-        return $user->can('profileRole.verify');
+        return $user->can('profileRole.status');
     }
 }

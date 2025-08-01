@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DocumentTypeEnum;
 use App\Models\ProfileRole;
 use App\Models\Country;
 use App\Models\User;
@@ -31,8 +32,9 @@ class ProfileRoleController extends Controller
         } 
 
         $countries = Country::all();
-
-        return view('profile_roles.create', compact('countries'));
+        $users = User::all();
+        $documentTypes = DocumentTypeEnum::cases();
+        return view('profile_roles.create', compact(['users', 'countries', 'documentTypes']));
     }
 
     public function store(Request $request)

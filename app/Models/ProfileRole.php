@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\StatusEnum;
-use App\Enums\GenderEnum;
-
+use App\StatusEnum;
+use App\GenderEnum;
+use App\Traits\HasUuidAndSlug;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProfileRole extends Model
 {
+    use HasUuidAndSlug, SoftDeletes;
+
       protected $fillable = [
         'user_id',
         'nationality_id',
@@ -38,4 +41,5 @@ class ProfileRole extends Model
     {
         return $this->belongsTo(Country::class, 'nationality_id');
     }
+
 }

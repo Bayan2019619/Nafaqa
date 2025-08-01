@@ -13,8 +13,8 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $permissions = ['view', 'create', 'edit', 'status', 'delete'];
-        $features = ['user', 'profile_role', 'case'];
+        $permissions = ['viewAny', 'view', 'create', 'update', 'status', 'delete'];
+        $features = ['user', 'profileRole', 'case'];
 
         $allPermissionNames = [];
 
@@ -36,7 +36,7 @@ class PermissionSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['phone' => '0912444693'],
             [
-                'name' => 'Murad AlBarki',
+                'name' => 'مراد البركي',
                 'email' => 'pe.murad@gmail.com',
                 'password' => bcrypt('@password'),
             ]
@@ -49,7 +49,7 @@ class PermissionSeeder extends Seeder
         $user1 = User::firstOrCreate(
             ['phone' => '0954440744'],
             [
-                'name' => 'Jhon doe',
+                'name' => 'محمد الخبولي',
                 'email' => 'test@test.com',
                 'password' => bcrypt('@password'),
             ]);
@@ -57,7 +57,7 @@ class PermissionSeeder extends Seeder
         $user1 = User::firstOrCreate(
             ['phone' => '0943383941'],
             [
-                'name' => 'Arthur Morgan',
+                'name' => 'الاء حسين',
                 'email' => 'arth@test.com',
                 'password' => bcrypt('@password'),
             ]);
