@@ -30,7 +30,7 @@
                     @if(auth()->user()->getAllPermissions()->isEmpty())
                      @endif
                         @if(auth()->user()->profileRole()->exists())
-                            <x-nav-link :href="route('profile-roles.show', auth()->user()->profileRole->slug)" 
+                            <x-nav-link :href="route('profile-roles.show', auth()->user()->profileRole->id)" 
                                         :active="request()->routeIs('profile-roles.show')">
                                 {{ __('My Profile') }}
                             </x-nav-link>

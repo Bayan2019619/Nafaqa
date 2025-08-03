@@ -17,14 +17,9 @@ class ProfileRoleController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
+        $this->authorize('viewAny', ProfileRole::class);
 
-        // Normal users should not access index at all
-        if (!$user->can('viewAny', ProfileRole::class)) {
-            abort(403);
-        }
-
-        $profileRoles = ProfileRole::with('user')->get();
+        $profileRoles = ProfileRole::with('user')->paginate(10);
 
         return view('profile-roles.index', compact('profileRoles'));
     }
@@ -39,14 +34,15 @@ class ProfileRoleController extends Controller
         }
 
         $countries = Country::all();
-        $users = User::all();
         $documentTypes = DocumentTypeEnum::cases();
 
-        return view('profile-roles.create', compact(['users', 'countries', 'documentTypes']));
+        return view('profile-roles.create', compact(['countries', 'documentTypes']));
     }
 
     public function store(StoreProfileRoleRequest $request, User $user = null)
     {
+        $this->authorize('create', ProfileRole::class);
+
         $targetUser = $user ?? auth()->user();
 
         if ($targetUser->profileRole) {
@@ -80,19 +76,31 @@ class ProfileRoleController extends Controller
     {
         $this->authorize('update', $profileRole);
 
-        $users = User::all();
-        $countries = Country::all();
+        if (!auth()->user()->profileRole) {
+            return redirect()->route('dashboard')
+                ->with('error', __('You dont have a profile.'));
+        }
 
-        return view('profile-roles.edit', compact('profileRole', 'users', 'countries'));
+        $countries = Country::all();
+        $documentTypes = DocumentTypeEnum::cases();
+
+        return view('profile-roles.edit', compact('profileRole', 'countries', 'documentTypes'));
     }
 
-    public function update(UpdateProfileRoleRequest $request, ProfileRole $profileRole)
+    public function update(UpdateProfileRoleRequest $request, ProfileRole $profileRole, User $user = null)
     {
         $this->authorize('update', $profileRole);
+        $targetUser = $user ?? auth()->user();
+
+        if (!auth()->user()->profileRole) {
+            return redirect()->route('dashboard')->with('error', __('You dont have a profile.'));
+        }
 
         $validated = $request->validated();
+        $validated['gender'] = $request->input('gender');
+        $validated['user_id'] = $targetUser->id;
 
-        if ($request->hasFile('document_file')) {
+        if($request->file('document_file')){
             $validated['document_file_url'] = $request->file('document_file')->store('documents', 'public');
         }
 
@@ -104,11 +112,11 @@ class ProfileRoleController extends Controller
             ->log('Profile updated for user: ' . $profileRole->user_id);
 
         return redirect()->route('dashboard')->with('success', __('Profile updated successfully.'));
+     
     }
 
     public function toggleStatus(ProfileRole $profileRole)
     {
-        // Authorization handled by route middleware
 
         $profileRole->status = !$profileRole->status;
         $profileRole->save();
@@ -132,6 +140,8 @@ class ProfileRoleController extends Controller
             ->performedOn($profileRole)
             ->log('Profile deleted for user: ' . $profileRole->user_id);
 
-        return redirect()->route('dashboard')->with('success', __('Profile deleted successfully.'));
+        return redirect()->route('profileRole.index')->with('success', __('Profile deleted successfully.'));
     }
+
+    
 }

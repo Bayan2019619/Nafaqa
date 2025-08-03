@@ -11,13 +11,15 @@ class UpdateProfileRoleRequest extends FormRequest
 {
     public function authorize()
     {
-        // Authorize update action on this specific profile role
-        return auth()->user()->can('update', $this->route('profileRole'));
+        return true;
     }
 
     public function rules()
     {
-        $profileRoleId = $this->route('profileRole')->id;
+        
+        $profileRole = $this->route('profile_role');
+        $profileRoleId = $profileRole ? $profileRole->id : null;
+
 
         return [
             'first_name' => 'sometimes|string|max:30',

@@ -1,7 +1,4 @@
-{{-- Wrap whole form with padding --}}
-<div class="p-8 max-w-6xl mx-auto bg-white rounded shadow mt-10">
 
-  
 
     {{-- Row 2: Names (3 columns) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-4">
@@ -164,8 +161,7 @@
     name="document_file"
     id="document_file"
     accept=".jpg,.jpeg,.png,.gif,.bmp,.webp,.pdf"
-    required
-    {{ isset($profileRole) ? '' : 'required' }}
+    @if (!isset($profileRole)) required @endif
     oninvalid="this.setCustomValidity('{{ __('Document File is required') }}')"
     oninput="this.setCustomValidity('')"
     class="block w-full text-sm text-gray-500
@@ -173,57 +169,6 @@
         file:rounded-md file:border-0
         file:text-sm file:font-semibold
         file:bg-indigo-50 file:text-indigo-700
-        hover:file:bg-indigo-100
-    "
+        hover:file:bg-indigo-100"
 />
 
-
-    {{-- Save button --}}
-    <div class="mt-8 flex justify-center space-x-8">
-        <button
-            type="submit"
-            class="
-              w-48
-              px-6 py-3
-              bg-blue-100
-              text-blue-700
-              font-semibold
-              rounded-md
-              hover:bg-blue-200
-              focus:outline-none
-              focus:ring-2
-              focus:ring-blue-300
-              focus:ring-offset-2
-              transition
-              duration-150
-              ease-in-out
-            "
-        >
-            {{ __('Save') }}
-        </button>
-        &nbsp;&nbsp;&nbsp;
-        <a href="{{ route('dashboard') }}"
-            class="
-              w-48
-              px-6 py-3
-              bg-gray-100
-              text-gray-700
-              font-semibold
-              rounded-md
-              hover:bg-gray-200
-              focus:outline-none
-              focus:ring-2
-              focus:ring-gray-300
-              focus:ring-offset-2
-              transition
-              duration-150
-              ease-in-out
-              text-center
-              inline-block
-            "
-        >
-            {{ __('Back') }}
-        </a>
-    </div>
-
-</div>

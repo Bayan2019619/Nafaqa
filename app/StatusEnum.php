@@ -30,6 +30,16 @@ enum StatusEnum: int
         };
     }
 
+     public function realColor(): string
+    {
+        return match($this) {
+            self::Pending => 'yellow',
+            self::Active => 'green',
+            self::Inactive => 'gray',
+            self::Rejected => 'red',
+        };
+    }
+
     public function icon(): string
     {
         return match($this) {

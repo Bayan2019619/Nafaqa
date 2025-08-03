@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', User::class);
+
+        $users = User::paginate(10);
+
+        return view('users.index', compact('users'));
     }
 
     /**
@@ -59,6 +65,12 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
+    {
+        //
+    }
+
+
+    public function toggleStatus(User $user)
     {
         //
     }

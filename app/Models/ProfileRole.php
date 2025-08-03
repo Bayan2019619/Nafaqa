@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\StatusEnum;
 use App\GenderEnum;
-use App\Traits\HasUuidAndSlug;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProfileRole extends Model
 {
-    use HasUuidAndSlug, SoftDeletes;
+    use SoftDeletes;
 
       protected $fillable = [
         'user_id',

@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2><strong>{{ __('Profile Role Details') }}</strong></h2>
+        <h2><strong>{{ __('Profile Role Details')  }}</strong></h2>
     </x-slot>
 
     <div class="max-w-4xl mx-auto bg-white rounded shadow p-6 mt-10">
 
         <div class="space-y-4 text-gray-700">
-            <p><strong>{{ __('Name') }}:</strong> {{ $profileRole->first_name }} {{ $profileRole->last_name }}</p>
+            <p><strong>{{ __('Name') }}:</strong> {{ $profileRole->first_name }} {{ $profileRole->mid_name }} {{ $profileRole->last_name }}</p>
             <p><strong>{{ __('National No') }}:</strong> {{ $profileRole->national_no }}</p>
             <p><strong>{{ __('IBAN') }}:</strong> {{ $profileRole->IBAN }}</p>
             <p>

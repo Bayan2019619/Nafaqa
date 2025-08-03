@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\ProfileRole;
 use App\Models\User;
+use App\StatusEnum;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProfileRolePolicy
@@ -41,7 +42,7 @@ class ProfileRolePolicy
      */
     public function create(User $user)
     {
-        return $user->profileRole === null;
+        return $user->profileRole === null || $user->can('profileRole.create');
     }
 
     /**
@@ -49,8 +50,8 @@ class ProfileRolePolicy
      */
     public function update(User $user, ProfileRole $profileRole)
     {
-        // Owner or admin (admin handled in before)
-        return ($user->id === $profileRole->user_id || $user->can('profileRole.update'));
+
+        return (($user->id === $profileRole->user_id && $profileRole->status == StatusEnum::Pending) || $user->can('profileRole.update'));
     }
 
     /**
@@ -58,8 +59,7 @@ class ProfileRolePolicy
      */
     public function delete(User $user, ProfileRole $profileRole)
     {
-        // Owner or admin (admin handled in before)
-        return ($user->id === $profileRole->user_id || $user->can('profileRole.delete'));
+        return ($user->can('profileRole.delete'));
     }
 
     /**
@@ -67,7 +67,6 @@ class ProfileRolePolicy
      */
     public function changeStatus(User $user, ProfileRole $profileRole)
     {
-        // Only users with 'profileRole.verify' permission or admin
         return $user->can('profileRole.status');
     }
 }
