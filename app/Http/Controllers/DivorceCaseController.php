@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\DivorceCase;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class DivorceCaseController extends Controller
 {
-    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $this->authorize('viewAny', User::class);
-
-        $users = User::with(['profileRole', 'roles', 'permissions'])->paginate(15);
-
-        return view('users.index', compact('users'));
+        //
     }
 
     /**
@@ -40,7 +34,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(DivorceCase $divorceCase)
     {
         //
     }
@@ -48,7 +42,7 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit(DivorceCase $divorceCase)
     {
         //
     }
@@ -56,7 +50,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, DivorceCase $divorceCase)
     {
         //
     }
@@ -64,13 +58,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
-    {
-        //
-    }
-
-
-    public function toggleStatus(User $user)
+    public function destroy(DivorceCase $divorceCase)
     {
         //
     }

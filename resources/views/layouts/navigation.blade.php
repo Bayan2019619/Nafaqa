@@ -25,10 +25,17 @@
                     </x-nav-link>
                 @endif
 
+                      <!-- Admin or user with permission -->
+                @if(auth()->user()->can('case.viewAny'))
+                    <x-nav-link :href="route('divorce-cases.index')" :active="request()->routeIs('divorce-cases.*')">
+                        {{ __('Divorce Cases') }}
+                    </x-nav-link>
+                @endif
+
                                     
                     <!-- Normal user -->
                     @if(auth()->user()->getAllPermissions()->isEmpty())
-                     @endif
+
                         @if(auth()->user()->profileRole()->exists())
                             <x-nav-link :href="route('profile-roles.show', auth()->user()->profileRole->id)" 
                                         :active="request()->routeIs('profile-roles.show')">
@@ -40,7 +47,7 @@
                                 {{ __('Create') }} {{ __('Profile') }}
                             </x-nav-link>
                         @endif
-                   
+                                        @endif
 
                         </div>
                     </div>

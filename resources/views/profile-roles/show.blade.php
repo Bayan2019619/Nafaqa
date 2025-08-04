@@ -51,7 +51,7 @@
               transition duration-150 ease-in-out">
         {{ __('Edit') }}
     </a>
-    <a href="{{ route('dashboard') }}"
+    <a href="{{ url()->previous() }}"
        class="px-6 py-2 text-sm bg-gray-100 text-gray-700 font-medium rounded-md
               hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-300
               transition duration-150 ease-in-out">

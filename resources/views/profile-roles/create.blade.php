@@ -31,7 +31,7 @@
             {{ __('Save') }}
         </button>
         &nbsp;&nbsp;&nbsp;
-        <a href="{{ route('dashboard') }}"
+        <a href="{{ url()->previous() }}"
             class="
               w-48
               px-6 py-3

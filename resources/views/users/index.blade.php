@@ -45,16 +45,8 @@
                                         <button type="submit" title="Toggle Status" class="text-gray-600 hover:text-gray-900">
                                             @if($statusEnum->label() == 'Active')
                                             <!-- Locked icon -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
-                                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                                                <line x1="7" y1="15" x2="17" y2="15" />
-                                            </svg>
-                                            @endif
-                                            @if($statusEnum->label() == 'Inactive')
-                                            <!-- Unlocked icon -->
-                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                       
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">
                                                 <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
@@ -63,10 +55,19 @@
                                             </svg>
 
                                             @endif
+                                            @if($statusEnum->label() == 'Inactive')
+                                            <!-- Unlocked icon -->
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
+                                                <path d="M7 11V7a5 5 0 0110 0v4" />
+                                                <line x1="7" y1="15" x2="17" y2="15" />
+                                            </svg>
+                                            @endif
                                         </button>
                                     </form>
 
-<div class="flex items-center">
+                                    <div class="flex items-center">
                                     <div class="mr-2">
                                     <!-- Edit (Pencil) -->
                                     <a href="{{ route('users.edit', $user) }}" title="Edit" class="text-gray-600 hover:text-yellow-500">
@@ -78,6 +79,8 @@
                                     </a>
                                     </div>
                                     </div>
+
+
                                     <!-- Delete (Trash) -->
                                     <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Are you sure?');">
                                         @csrf
@@ -93,7 +96,29 @@
                                             </svg>
                                         </button>
                                     </form>
+
+                                    @php
+    $hasPermissions = $user->getAllPermissions()->isNotEmpty();
+@endphp
+
+@if (!$hasPermissions)
+    <a href="{{ $user->profileRole
+        ? route('profile-roles.show', ['profile_role' => $user->profileRole->id])
+        : route('profile-roles.create', ['user' => $user->id]) }}"
+       title="{{ $user->profileRole ? 'Show Profile' : 'Create Profile' }}"
+       class="text-gray-600 hover:text-blue-600 mr-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M5.121 17.804A9.964 9.964 0 0112 15c2.21 0 4.248.714 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+    </a>
+@endif
+
+
                                 </div>
+
+                                
                             </td>
                         </tr>
                     @empty

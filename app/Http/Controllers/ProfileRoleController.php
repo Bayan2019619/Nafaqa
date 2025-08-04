@@ -28,22 +28,18 @@ class ProfileRoleController extends Controller
     {
         $this->authorize('create', ProfileRole::class);
 
-        if (auth()->user()->profileRole) {
-            return redirect()->route('dashboard')
-                ->with('error', __('You already have a profile.'));
-        }
-
         $countries = Country::all();
         $documentTypes = DocumentTypeEnum::cases();
 
         return view('profile-roles.create', compact(['countries', 'documentTypes']));
     }
 
-    public function store(StoreProfileRoleRequest $request, User $user = null)
+    public function store(StoreProfileRoleRequest $request)
     {
         $this->authorize('create', ProfileRole::class);
 
-        $targetUser = $user ?? auth()->user();
+        $userId = $request->user;
+        $targetUser = $userId && auth()->user()->can('profileRole.create') ? User::findOrFail($userId) : auth()->user();
 
         if ($targetUser->profileRole) {
             return redirect()->route('dashboard')
@@ -68,6 +64,7 @@ class ProfileRoleController extends Controller
     public function show(ProfileRole $profileRole)
     {
         $this->authorize('view', $profileRole);
+
         $nationalityName = $profileRole->nationality->name;
         return view('profile-roles.show', compact('profileRole', 'nationalityName'));
     }
@@ -76,29 +73,18 @@ class ProfileRoleController extends Controller
     {
         $this->authorize('update', $profileRole);
 
-        if (!auth()->user()->profileRole) {
-            return redirect()->route('dashboard')
-                ->with('error', __('You dont have a profile.'));
-        }
-
         $countries = Country::all();
         $documentTypes = DocumentTypeEnum::cases();
 
         return view('profile-roles.edit', compact('profileRole', 'countries', 'documentTypes'));
     }
 
-    public function update(UpdateProfileRoleRequest $request, ProfileRole $profileRole, User $user = null)
+    public function update(UpdateProfileRoleRequest $request, ProfileRole $profileRole)
     {
         $this->authorize('update', $profileRole);
-        $targetUser = $user ?? auth()->user();
-
-        if (!auth()->user()->profileRole) {
-            return redirect()->route('dashboard')->with('error', __('You dont have a profile.'));
-        }
 
         $validated = $request->validated();
         $validated['gender'] = $request->input('gender');
-        $validated['user_id'] = $targetUser->id;
 
         if($request->file('document_file')){
             $validated['document_file_url'] = $request->file('document_file')->store('documents', 'public');
