@@ -31,21 +31,43 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ $user->name ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $user->phone ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-block w-3 h-3 rounded-full mr-2 bg-{{ $statusEnum->realColor() }}-500"></span>
+                                <span class="inline-block w-3 h-3 rounded-full mr-2 bg-{{$statusEnum->realColor()}}-500"></span>
                                 {{ __($statusEnum->label()) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex space-x-3 items-center">
-                                    <!-- View (Eye) -->
-                                    <a href="{{ route('users.show', $user) }}" title="View" class="text-gray-600 hover:text-blue-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    </a>
 
+
+                                    <!-- Toggle Status (Lock / Unlock) -->
+                                    <form method="POST" action="{{ route('users.toggleStatus', $user) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" title="Toggle Status" class="text-gray-600 hover:text-gray-900">
+                                            @if($statusEnum->label() == 'Active')
+                                            <!-- Locked icon -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
+                                                <path d="M7 11V7a5 5 0 0110 0v4" />
+                                                <line x1="7" y1="15" x2="17" y2="15" />
+                                            </svg>
+                                            @endif
+                                            @if($statusEnum->label() == 'Inactive')
+                                            <!-- Unlocked icon -->
+                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
+                                                <path d="M17 11V7a5 5 0 00-9.9-1" />
+                                                <line x1="7" y1="15" x2="17" y2="15" />
+                                            </svg>
+
+                                            @endif
+                                        </button>
+                                    </form>
+
+<div class="flex items-center">
+                                    <div class="mr-2">
                                     <!-- Edit (Pencil) -->
                                     <a href="{{ route('users.edit', $user) }}" title="Edit" class="text-gray-600 hover:text-yellow-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -54,31 +76,8 @@
                                             <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z" />
                                         </svg>
                                     </a>
-
-                                    <!-- Toggle Status (Lock / Unlock) -->
-                                    <form method="POST" action="{{ route('users.toggleStatus', $user) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" title="Toggle Status" class="text-gray-600 hover:text-gray-900">
-                                            @if($user->status)
-                                            <!-- Locked icon -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
-                                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                                            </svg>
-                                            @else
-                                            <!-- Unlocked icon -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
-                                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                                                <line x1="7" y1="15" x2="17" y2="15" />
-                                            </svg>
-                                            @endif
-                                        </button>
-                                    </form>
-
+                                    </div>
+                                    </div>
                                     <!-- Delete (Trash) -->
                                     <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Are you sure?');">
                                         @csrf
