@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -50,7 +51,13 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+        $allPermissions = Permission::orderBy('name')->get();
+
+    $groupedPermissions = $allPermissions->groupBy(function ($perm) {
+        return explode('.', $perm->name)[0]; // groups like: user => [...], case => [...]
+    });
+
+    return view('users.edit', compact('user', 'groupedPermissions'));
     }
 
     /**
