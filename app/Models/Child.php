@@ -15,7 +15,7 @@ class Child extends Model
 
     protected $fillable = [
         'case_id',
-        'full_name',
+        'first_name',
         'nationality_no',
         'date_of_birth',
         'gender',
@@ -25,6 +25,7 @@ class Child extends Model
       protected $casts = [
         'status' => StatusEnum::class,
         'gender' => GenderEnum::class,
+        'date_of_birth' => 'date'
     ];
 
     public function divorceCase()

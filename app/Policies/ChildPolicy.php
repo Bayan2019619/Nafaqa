@@ -8,12 +8,19 @@ use Illuminate\Auth\Access\Response;
 
 class ChildPolicy
 {
+        public function before(User $user, $ability)
+    {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->can('children.viewAny');
     }
 
     /**
@@ -21,7 +28,7 @@ class ChildPolicy
      */
     public function view(User $user, Child $child): bool
     {
-        return false;
+        return $user->can('children.view');
     }
 
     /**
@@ -29,7 +36,7 @@ class ChildPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->can('children.create');
     }
 
     /**
@@ -37,7 +44,7 @@ class ChildPolicy
      */
     public function update(User $user, Child $child): bool
     {
-        return false;
+        return $user->can('children.update');
     }
 
     /**
@@ -45,22 +52,8 @@ class ChildPolicy
      */
     public function delete(User $user, Child $child): bool
     {
-        return false;
+        return $user->can('children.delete');
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Child $child): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Child $child): bool
-    {
-        return false;
-    }
+ 
 }

@@ -55,7 +55,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex space-x-3 items-center">
-                                
+                            
+
+
 
                                     @can('update', $divorceCase)
                                     <!-- Edit -->
@@ -68,6 +70,19 @@
                                         </svg>
                                     </a>
                                     @endcan
+&nbsp;
+&nbsp;
+&nbsp;
+
+ @can('viewAny', [\App\Models\DivorceCase::class, $divorceCase])
+<a href="{{ route('divorce-cases.children.index', $divorceCase) }}"
+   class="text-indigo-600 hover:text-indigo-900"
+   title="View Children">
+   <svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+       <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M12 12a4 4 0 100-8 4 4 0 000 8z" />
+   </svg>
+</a>
+@endcan
 
                                     @can('delete', $divorceCase)
                                     <!-- Delete -->

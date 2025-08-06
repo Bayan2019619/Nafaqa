@@ -33,12 +33,8 @@ Route::middleware('auth')->group(function () {
     ->name('users.toggleStatus');
 
     Route::resource('divorce-cases', DivorceCaseController::class);
-    Route::prefix('divorce-cases/{divorceCase}')->group(function () {
-    Route::get('children', [ChildController::class, 'index']);
-    Route::post('children', [ChildController::class, 'store']);
-});
 
-
+    Route::resource('divorce-cases.children', ChildController::class);
     
 });
 

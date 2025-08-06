@@ -2,52 +2,113 @@
 
 namespace App\Http\Controllers;
 
+use App\GenderEnum;
+use App\StatusEnum;
 use App\Models\Child;
+use App\Models\DivorceCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ChildController extends Controller
 {
-    public function index()
+    use AuthorizesRequests;
+
+    public function index(DivorceCase $divorceCase)
     {
-        return Child::all();
+        $this->authorize('viewAny', [Child::class, $divorceCase]);
+
+        $children = $divorceCase->children()->paginate(10);
+
+        return view('children.index', compact('divorceCase', 'children'));
     }
 
-    public function store(Request $request)
+    public function create(DivorceCase $divorceCase)
     {
+        $this->authorize('create', [Child::class, $divorceCase]);
+
+        return view('children.create', compact('divorceCase'));
+    }
+
+    public function store(Request $request, DivorceCase $divorceCase)
+    {
+        $this->authorize('create', [Child::class, $divorceCase]);
+
         $validated = $request->validate([
-            'case_id' => 'required|exists:divorce_cases,id',
-            'full_name' => 'required|string|max:255',
-            'nationality_no' => 'required|string|unique:children,nationality_no',
+            'first_name' => 'required|string|max:100',
+            'nationality_no' => ['required', 'digits:12', 'regex:/^[12]/', 'unique:children,nationality_no'],
             'date_of_birth' => 'required|date',
-            'gender' => 'required|in:0,1',
-            'status' => 'nullable|in:0,1',
         ]);
 
-        return Child::create($validated);
+        $validated['gender'] = $this->extractGender($validated['nationality_no']);
+        $validated['case_id'] = $divorceCase->id;
+
+        Child::create($validated);
+        $divorceCase->status = StatusEnum::Active->value;
+        $divorceCase->save();
+        return redirect()
+            ->route('divorce-cases.children.index', $divorceCase)
+            ->with('success', 'Child added successfully.');
     }
 
-    public function show(Child $child)
+    public function show(DivorceCase $divorceCase, Child $child)
     {
-        return $child;
+        $this->authorize('view', $child);
+
+        return view('children.show', compact('divorceCase', 'child'));
     }
 
-    public function update(Request $request, Child $child)
+    public function edit(DivorceCase $divorceCase, Child $child)
     {
+        $this->authorize('update', $child);
+
+        return view('children.edit', compact('divorceCase', 'child'));
+    }
+
+    public function update(Request $request, DivorceCase $divorceCase, Child $child)
+    {
+        $this->authorize('update', $child);
+
         $validated = $request->validate([
-            'full_name' => 'sometimes|string|max:255',
-            'nationality_no' => 'sometimes|string|unique:children,nationality_no,' . $child->id,
-            'date_of_birth' => 'sometimes|date',
-            'gender' => 'sometimes|in:0,1',
-            'status' => 'sometimes|in:0,1',
+            'first_name' => 'required|string|max:100',
+            'nationality_no' => [
+                'required',
+                'digits:12',
+                'regex:/^[12]/',
+                'unique:children,nationality_no,' . $child->id,
+            ],
+            'date_of_birth' => 'required|date',
         ]);
+
+        $validated['gender'] = $this->extractGender($validated['nationality_no']);
 
         $child->update($validated);
-        return $child;
+
+        return redirect()
+            ->route('divorce-cases.children.index', $divorceCase)
+            ->with('success', 'Child updated successfully.');
     }
 
-    public function destroy(Child $child)
+    public function destroy(DivorceCase $divorceCase, Child $child)
     {
+        $this->authorize('delete', $child);
+
         $child->delete();
-        return response()->noContent();
+
+        return redirect()
+            ->route('divorce-cases.children.index', $divorceCase)
+            ->with('success', 'Child deleted successfully.');
     }
+
+    private function extractGender(string $nationalityNo): int
+{
+    $prefix = $nationalityNo[0];
+
+    foreach (GenderEnum::cases() as $gender) {
+        if ((string) $gender->value === $prefix) {
+            return $gender->value;
+        }
+    }
+
+    throw new \InvalidArgumentException("Unknown gender prefix: {$prefix}");
+}
 }
