@@ -23,7 +23,7 @@ class DivorceCasePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('divorceCase.viewAny');
+        return $user->can('divorceCases.viewAny');
     }
 
     /**
@@ -31,7 +31,7 @@ class DivorceCasePolicy
      */
     public function view(User $user, DivorceCase $divorceCase): bool
     {
-        return false;
+        return $user->profileRole->divorceCase === $divorceCase || $user->can('divorceCases.view');
     }
 
     /**
@@ -39,7 +39,7 @@ class DivorceCasePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->can('divorceCases.create');
     }
 
     /**
@@ -47,7 +47,7 @@ class DivorceCasePolicy
      */
     public function update(User $user, DivorceCase $divorceCase): bool
     {
-        return false;
+        return $user->can('divorceCases.update');
     }
 
     /**
@@ -55,22 +55,11 @@ class DivorceCasePolicy
      */
     public function delete(User $user, DivorceCase $divorceCase): bool
     {
-        return false;
+        return $user->can('divorceCases.delete');
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, DivorceCase $divorceCase): bool
+        public function changeStatus(User $user, DivorceCase $divorceCase)
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, DivorceCase $divorceCase): bool
-    {
-        return false;
+        return $user->can('divorceCases.changeStatus');
     }
 }

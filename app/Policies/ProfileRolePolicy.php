@@ -67,7 +67,6 @@ class ProfileRolePolicy
      */
     public function changeStatus(User $user, ProfileRole $profileRole)
     {
-        dd('toog');
-        return $user->can('profileRoles.status');
+        return $user->can('profileRoles.changeStatus');
     }
 }

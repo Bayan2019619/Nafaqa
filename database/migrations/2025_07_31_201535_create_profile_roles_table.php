@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('profile_roles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('nationality_id')->constrained('countries');
             $table->string('first_name');
             $table->string('mid_name');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('national_no')->nullable()->unique();
             $table->string('IBAN')->unique();
             $table->string('document_type');
-            $table->string('document_no')->unique();
+            $table->string('document_no');
             $table->string('document_file_url');
             $table->tinyInteger('status')->default(StatusEnum::Pending->value);
             $table->tinyInteger('gender');

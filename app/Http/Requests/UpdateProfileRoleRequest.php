@@ -45,8 +45,7 @@ class UpdateProfileRoleRequest extends FormRequest
             'document_no' => [
                 'sometimes',
                 'string',
-                'max:255',
-                Rule::unique('profile_roles')->ignore($profileRoleId),
+                'max:255'
             ],
 
             'IBAN' => [

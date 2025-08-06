@@ -44,7 +44,7 @@
         </div>
 <div class="mt-6 flex justify-center space-x-6">
     <!-- Approve Button -->
-
+@can('changeStatus', $profileRole)
 @if($profileRole->status->value == \App\StatusEnum::Pending->value)
     <form action="{{ route('profile-roles.review', $profileRole) }}" method="POST" class="inline">
         @csrf
@@ -69,6 +69,7 @@
         </button>
     </form>
 @endif
+@endcan
     <!-- Back Button -->
     <a href="{{ url()->previous() }}"
        class="px-5 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition">

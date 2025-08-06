@@ -21,10 +21,10 @@ class StoreProfileRoleRequest extends FormRequest
             'last_name' => 'required|string|max:30',
             'date_of_birth' => 'required|date|before:today',
             'nationality_id' => 'required|exists:countries,id',
-            'national_no' => ['required', 'regex:/^[1-2][0-9]{11}$/', 'size:12'],
+            'national_no' => ['required', 'regex:/^[1-2][0-9]{11}$/', 'size:12', 'unique:profile_roles,national_no'],
             'document_type' => 'required|integer|in:' . implode(',', array_column(AppDocumentTypeEnum::cases(), 'value')),
             'document_no' => 'required|string|max:255',
-            'IBAN' => 'required|string|max:255',
+            'IBAN' => 'required|string|max:255|unique:profile_roles,IBAN',
             'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
     }

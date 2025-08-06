@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChildController;
 use App\Http\Controllers\DivorceCaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileRoleController;
@@ -30,6 +31,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])
     ->middleware('can:changeStatus,user')
     ->name('users.toggleStatus');
+
+    Route::resource('divorce-cases', DivorceCaseController::class);
+    Route::prefix('divorce-cases/{divorceCase}')->group(function () {
+    Route::get('children', [ChildController::class, 'index']);
+    Route::post('children', [ChildController::class, 'store']);
+});
+
+
     
 });
 

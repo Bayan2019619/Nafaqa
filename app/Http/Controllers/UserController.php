@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::with(['UserRole', 'roles', 'permissions'])->paginate(15);
+        $users = User::with(['profileRole', 'roles', 'permissions'])->paginate(15);
 
         return view('users.index', compact('users'));
     }

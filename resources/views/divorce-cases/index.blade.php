@@ -1,8 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-            {{ __('divorceCases') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                {{ __('Divorce Cases') }}
+            </h2>
+            @can('create', \App\Models\DivorceCase::class)
+     <a href="{{ route('divorce-cases.create') }}"
+   class="inline-block px-4 py-2 bg-indigo-100 text-indigo-700 rounded shadow hover:bg-indigo-200 hover:text-indigo-900 transition">
+   + {{ __('Create') }}
+</a>
+
+            @endcan
+        </div>
     </x-slot>
 
     <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,10 +25,11 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="px-6 py-3">{{__('Name')}}</th>
-                        <th class="px-6 py-3">{{__('creator')}}</th>
-                        <th class="px-6 py-3">{{__('Status')}}</th>
-                        <th class="px-6 py-3">{{__('Actions')}}</th>
+                        <th class="px-6 py-3">{{ __('Case No') }}</th>
+                        <th class="px-6 py-3">{{ __('Father Name') }}</th>
+                        <th class="px-6 py-3">{{ __('Mother Name') }}</th>
+                        <th class="px-6 py-3">{{ __('Status') }}</th>
+                        <th class="px-6 py-3">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
@@ -28,67 +38,43 @@
                             $statusEnum = $divorceCase->status;
                         @endphp
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $divorceCase->firstName}} {{ $divorceCase->midName}} {{ $divorceCase->lastName}}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $divorceCase->firstName }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $divorceCase->case_no }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                                {{ optional($divorceCase->father)->first_name ?? __('N/A') }}
+                                {{ optional($divorceCase->father)->mid_name ?? '' }}
+                                {{ optional($divorceCase->father)->last_name ?? '' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ optional($divorceCase->mother)->first_name ?? __('N/A') }}
+                                {{ optional($divorceCase->mother)->mid_name ?? '' }}
+                                {{ optional($divorceCase->mother)->last_name ?? '' }}
+                            </td>
+                           <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-block w-3 h-3 rounded-full mr-2 bg-{{$statusEnum->realColor()}}-500"></span>
                                 {{ __($statusEnum->label()) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-
                                 <div class="flex space-x-3 items-center">
+                                
 
-@can('changeStatus', $divorceCase)
-                                    <!-- Toggle Status (Lock / Unlock) -->
-                                    <form method="POST" action="{{ route('divorce-cases.toggleStatus', $divorceCase) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" title="Toggle Status" class="text-gray-600 hover:text-gray-900">
-                                            @if($statusEnum->label() == 'Active')
-                                            <!-- Locked icon -->
-                                       
-                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
-                                                <path d="M17 11V7a5 5 0 00-9.9-1" />
-                                                <line x1="7" y1="15" x2="17" y2="15" />
-                                            </svg>
-
-                                            @endif
-                                            @if($statusEnum->label() == 'Inactive')
-                                            <!-- Unlocked icon -->
-                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="5" y="11" width="14" height="10" rx="2" ry="2"/>
-                                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                                                <line x1="7" y1="15" x2="17" y2="15" />
-                                            </svg>
-                                            @endif
-                                        </button>
-                                    </form>
-@endcan
-@can('update', $divorceCase)
-                                    <div class="flex items-center">
-                                    <div class="mr-2">
-                                    <!-- Edit (Pencil) -->
+                                    @can('update', $divorceCase)
+                                    <!-- Edit -->
                                     <a href="{{ route('divorce-cases.edit', $divorceCase) }}" title="Edit" class="text-gray-600 hover:text-yellow-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 20h9" />
                                             <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z" />
                                         </svg>
                                     </a>
-                                    </div>
-                                    </div>
-@endcan
-@can('delete', $divorceCase)
+                                    @endcan
 
-                                    <!-- Delete (Trash) -->
+                                    @can('delete', $divorceCase)
+                                    <!-- Delete -->
                                     <form method="POST" action="{{ route('divorce-cases.destroy', $divorceCase) }}" class="delete-form">
-    @csrf
-    @method('DELETE')
-    <button type="button" title="Delete" class="delete-btn text-red-600 hover:text-red-800">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" title="Delete" class="delete-btn text-red-600 hover:text-red-800">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7" />
@@ -99,13 +85,13 @@
                                             </svg>
                                         </button>
                                     </form>
-@endcan
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-6 text-gray-500">No divorceCases found.</td>
+                            <td colspan="5" class="text-center py-6 text-gray-500">{{ __('No divorce cases found.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -131,13 +117,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 title: 'هل أنت متأكد؟',
                 text: "لا يمكن التراجع عن هذا الإجراء!",
                 icon: 'warning',
-                iconColor: '#e07b7b',  // softer red for warning icon
+                iconColor: '#e07b7b',
                 showCancelButton: true,
                 confirmButtonText: 'نعم، احذف',
                 cancelButtonText: 'إلغاء',
-                confirmButtonColor: '#d9534f',  // bootstrap's danger red
-                cancelButtonColor: '#6c757d',   // bootstrap's secondary gray
-                reverseButtons: true, // مناسب للغات اليمين لليسار
+                confirmButtonColor: '#d9534f',
+                cancelButtonColor: '#6c757d',
+                reverseButtons: true,
                 buttonsStyling: true,
                 customClass: {
                     popup: 'font-sans text-base p-6',
@@ -155,6 +141,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
-
-
