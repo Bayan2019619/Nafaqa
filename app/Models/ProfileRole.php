@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\StatusEnum;
 use App\GenderEnum;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ProfileRole extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
       protected $fillable = [
         'user_id',
@@ -27,6 +29,11 @@ class ProfileRole extends Model
         'gender'
     ];
 
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+{
+    return \Spatie\Activitylog\LogOptions::defaults()->logOnlyDirty()->dontSubmitEmptyLogs();
+}
+
     protected $casts = [
         'status' => StatusEnum::class,
         'gender' => GenderEnum::class,
@@ -42,4 +49,18 @@ class ProfileRole extends Model
         return $this->belongsTo(Country::class, 'nationality_id');
     }
 
-}
+
+    public function activities()
+    {
+        return $this->morphMany(Activity::class, 'subject');
+    }
+
+        public function getCreatorNameAttribute()
+    {
+
+        return optional(
+            $this->activities()->where('description', 'Created')->latest()->first()
+        )->causer?->name;
+    }
+
+    }

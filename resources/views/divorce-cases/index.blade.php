@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-            {{ __('Users') }}
+            {{ __('divorceCases') }}
         </h2>
     </x-slot>
 
@@ -17,32 +17,30 @@
                 <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
                     <tr>
                         <th class="px-6 py-3">{{__('Name')}}</th>
-                        <th class="px-6 py-3">{{__('Phone')}}</th>
+                        <th class="px-6 py-3">{{__('creator')}}</th>
                         <th class="px-6 py-3">{{__('Status')}}</th>
                         <th class="px-6 py-3">{{__('Actions')}}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @forelse($users as $user)
+                    @forelse($divorceCases as $divorceCase)
                         @php
-                            $statusEnum = $user->status;
+                            $statusEnum = $divorceCase->status;
                         @endphp
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->name ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->phone ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $divorceCase->firstName}} {{ $divorceCase->midName}} {{ $divorceCase->lastName}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $divorceCase->firstName }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-block w-3 h-3 rounded-full mr-2 bg-{{$statusEnum->realColor()}}-500"></span>
                                 {{ __($statusEnum->label()) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                        @if ($user->hasRole('admin'))
-                            <span class="text-gray-400 italic">No actions - Admin</span>
-                        @else
+
                                 <div class="flex space-x-3 items-center">
 
-@can('changeStatus', $user)
+@can('changeStatus', $divorceCase)
                                     <!-- Toggle Status (Lock / Unlock) -->
-                                    <form method="POST" action="{{ route('users.toggleStatus', $user) }}">
+                                    <form method="POST" action="{{ route('divorce-cases.toggleStatus', $divorceCase) }}">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" title="Toggle Status" class="text-gray-600 hover:text-gray-900">
@@ -70,11 +68,11 @@
                                         </button>
                                     </form>
 @endcan
-@can('update', $user)
+@can('update', $divorceCase)
                                     <div class="flex items-center">
                                     <div class="mr-2">
                                     <!-- Edit (Pencil) -->
-                                    <a href="{{ route('users.edit', $user) }}" title="Edit" class="text-gray-600 hover:text-yellow-500">
+                                    <a href="{{ route('divorce-cases.edit', $divorceCase) }}" title="Edit" class="text-gray-600 hover:text-yellow-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 20h9" />
@@ -84,10 +82,10 @@
                                     </div>
                                     </div>
 @endcan
-@can('delete', $user)
+@can('delete', $divorceCase)
 
                                     <!-- Delete (Trash) -->
-                                    <form method="POST" action="{{ route('users.destroy', $user) }}" class="delete-form">
+                                    <form method="POST" action="{{ route('divorce-cases.destroy', $divorceCase) }}" class="delete-form">
     @csrf
     @method('DELETE')
     <button type="button" title="Delete" class="delete-btn text-red-600 hover:text-red-800">
@@ -102,47 +100,12 @@
                                         </button>
                                     </form>
 @endcan
-
-@php
-    $hasPermissions = $user->getAllPermissions()->isNotEmpty();
-@endphp
-
-@if (!$hasPermissions)
-    @if ($user->profileRole)
-        @can('view', $user->profileRole)
-            <a href="{{ route('profile-roles.show', ['profile_role' => $user->profileRole->id]) }}"
-               title="Show Profile"
-               class="text-gray-600 hover:text-blue-600 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5.121 17.804A9.964 9.964 0 0112 15c2.21 0 4.248.714 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </a>
-        @endcan
-    @else
-        @can('create', \App\Models\ProfileRole::class)
-            <a href="{{ route('profile-roles.create', ['user' => $user->id]) }}"
-               title="Create Profile"
-               class="text-gray-600 hover:text-blue-600 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M5.121 17.804A9.964 9.964 0 0112 15c2.21 0 4.248.714 5.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </a>
-        @endcan
-    @endif
- @endif
-
                                 </div>
-
-                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-6 text-gray-500">No users found.</td>
+                            <td colspan="4" class="text-center py-6 text-gray-500">No divorceCases found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -150,7 +113,7 @@
         </div>
 
         <div class="mt-6">
-            {{ $users->links() }}
+            {{ $divorceCases->links() }}
         </div>
     </div>
 </x-app-layout>

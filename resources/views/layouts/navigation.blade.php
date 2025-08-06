@@ -19,14 +19,20 @@
 
 <br>
                     <!-- Admin or user with permission -->
-                @if(auth()->user()->can('user.viewAny'))
+                @if(auth()->user()->can('users.viewAny'))
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                         {{ __('Users') }}
                     </x-nav-link>
                 @endif
 
+                @if(auth()->user()->can('profileRoles.viewAny'))
+                    <x-nav-link :href="route('profile-roles.index')" :active="request()->routeIs('profileRoles.*')">
+                        {{ __('profileRoles') }}
+                    </x-nav-link>
+                @endif
+
                       <!-- Admin or user with permission -->
-                @if(auth()->user()->can('case.viewAny'))
+                @if(auth()->user()->can('divorceCases.viewAny'))
                     <x-nav-link :href="route('divorce-cases.index')" :active="request()->routeIs('divorce-cases.*')">
                         {{ __('Divorce Cases') }}
                     </x-nav-link>

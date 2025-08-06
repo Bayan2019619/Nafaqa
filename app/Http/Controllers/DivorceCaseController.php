@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\DivorceCase;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class DivorceCaseController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', DivorceCase::class);
+
+        $divorceCases = DivorceCase::paginate(10);
+
+        return view('divorce-cases.index', compact('divorceCases'));
     }
 
     /**

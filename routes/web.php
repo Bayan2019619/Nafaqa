@@ -24,9 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('divorce-cases', DivorceCaseController::class);
     Route::post('/users/{user}/profile-roles/store', [ProfileRoleController::class, 'store'])->middleware(['auth', 'can:create,profileRole']);
     Route::patch('/users/{user}/profile-roles/{profileRole}', [ProfileRoleController::class, 'update'])->middleware(['auth', 'can:update,profileRole']);
-    Route::patch('/profile-roles/{profileRole}/toggle-status', [ProfileRoleController::class, 'toggleStatus'])
-    ->middleware('can:changeStatus,profileRole')
-    ->name('profile-roles.toggleStatus');
+    Route::patch('/profile-roles/{profileRole}/review', [ProfileRoleController::class, 'review'])->middleware('can:changeStatus,profileRole')->name('profile-roles.review');
+    Route::get('/profile-roles/{profileRole}/review', [ProfileRoleController::class, 'showReview'])->middleware('can:changeStatus,profileRole')->name('profile-roles.show-review');
 
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])
     ->middleware('can:changeStatus,user')

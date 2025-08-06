@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProfileRoleRequest;
 use App\Models\ProfileRole;
 use App\Models\Country;
 use App\Models\User;
+use App\StatusEnum;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -39,7 +40,7 @@ class ProfileRoleController extends Controller
         $this->authorize('create', ProfileRole::class);
 
         $userId = $request->user;
-        $targetUser = $userId && auth()->user()->can('profileRole.create') ? User::findOrFail($userId) : auth()->user();
+        $targetUser = $userId && auth()->user()->can('profileRoles.create') ? User::findOrFail($userId) : auth()->user();
 
         if ($targetUser->profileRole) {
             return redirect()->route('dashboard')
@@ -56,7 +57,7 @@ class ProfileRoleController extends Controller
         activity()
             ->causedBy(auth()->user())
             ->performedOn($profileRole)
-            ->log('Profile created for user: ' . $targetUser->id);
+            ->log('Created');
 
         return redirect()->route('dashboard')->with('success', __('Profile created successfully.'));
     }
@@ -95,24 +96,38 @@ class ProfileRoleController extends Controller
         activity()
             ->causedBy(auth()->user())
             ->performedOn($profileRole)
-            ->log('Profile updated for user: ' . $profileRole->user_id);
+            ->log('Updated');
 
-        return redirect()->route('dashboard')->with('success', __('Profile updated successfully.'));
+        return redirect()->route('dashboard')>with('success', __('Profile updated successfully.'));
      
     }
 
-    public function toggleStatus(ProfileRole $profileRole)
+    public function showReview(ProfileRole $profileRole)
     {
+        $this->authorize('changeStatus', $profileRole);
 
-        $profileRole->status = !$profileRole->status;
-        $profileRole->save();
+        $nationalityName = $profileRole->nationality->name;
+        return view('profile-roles.review', compact('profileRole', 'nationalityName'));
+    }
 
-        activity()
+    public function review(Request $request, ProfileRole $profileRole)
+{
+    $this->authorize('changeStatus', $profileRole);
+    $statusValue = $request->input('status');
+
+    if (!in_array((int)$statusValue, array_column(StatusEnum::cases(), 'value'))) {
+        return redirect()->back()->withErrors('Invalid status value.');
+    }
+
+    $profileRole->status = StatusEnum::from((int)$statusValue);
+    $profileRole->save();
+
+       activity()
             ->causedBy(auth()->user())
             ->performedOn($profileRole)
-            ->log('Toggled status for user: ' . $profileRole->user_id);
+            ->log('Reviewed');
 
-        return back()->with('success', __('Status updated.'));
+    return redirect()->route('profile-roles.index')->with('success', __('Status updated.'));
     }
 
     public function destroy(ProfileRole $profileRole)
@@ -124,9 +139,9 @@ class ProfileRoleController extends Controller
         activity()
             ->causedBy(auth()->user())
             ->performedOn($profileRole)
-            ->log('Profile deleted for user: ' . $profileRole->user_id);
+            ->log('Deleted');
 
-        return redirect()->route('profileRole.index')->with('success', __('Profile deleted successfully.'));
+        return redirect()->route('profile-roles.index')->with('success', __('Profile deleted successfully.'));
     }
 
     

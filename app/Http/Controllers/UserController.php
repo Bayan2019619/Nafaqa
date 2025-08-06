@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\StatusEnum;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -17,33 +18,9 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::with(['profileRole', 'roles', 'permissions'])->paginate(15);
+        $users = User::with(['UserRole', 'roles', 'permissions'])->paginate(15);
 
         return view('users.index', compact('users'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
     }
 
     /**
@@ -51,13 +28,15 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', User::class);
+
         $allPermissions = Permission::orderBy('name')->get();
 
-    $groupedPermissions = $allPermissions->groupBy(function ($perm) {
-        return explode('.', $perm->name)[0]; // groups like: user => [...], case => [...]
-    });
+        $groupedPermissions = $allPermissions->groupBy(function ($perm) {
+        return explode('.', $perm->name)[0]; 
+        });
 
-    return view('users.edit', compact('user', 'groupedPermissions'));
+        return view('users.edit', compact('user', 'groupedPermissions'));
     }
 
     /**
@@ -65,7 +44,21 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $this->authorize('update', User::class);
+
+        $request->validate([
+            'permissions' => 'array',
+            'permissions.*' => 'string|exists:permissions,name',
+        ]);
+
+        $user->syncPermissions($request->permissions ?? []);
+
+         activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->log('Created');
+
+        return redirect()->route('users.index')->with('success', __('Permissions updated.'));
     }
 
     /**
@@ -73,12 +66,27 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $this->authorize('delete', User::class);
+        $user->delete();
+
+                activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->log('Deleted');
+        return redirect()->route('users.index')->with('success', __('deleted successfully.'));
     }
 
 
     public function toggleStatus(User $user)
     {
-        //
+        $user->status == StatusEnum::Active ?  $user->status = StatusEnum::Inactive : $user->status = StatusEnum::Active ;
+        $user->save();
+
+                        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->log('Status');
+
+        return redirect()->route('users.index');
     }
 }

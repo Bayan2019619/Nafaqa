@@ -22,7 +22,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('user.viewAny');
+        return $user->can('users.viewAny');
     }
 
     /**
@@ -30,7 +30,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->can('user.view');
+        return $user->can('users.view');
     }
 
     /**
@@ -38,7 +38,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('user.create');
+        return $user->can('users.create');
     }
 
     /**
@@ -46,7 +46,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->can('user.edit');
+        return $user->can('users.edit');
     }
 
     /**
@@ -54,7 +54,12 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->can('user.delete');
+        return $user->can('users.delete');
+    }
+
+    public function changeStatus(User $user, User $model): bool
+    {
+        return $user->can('users.changeStatus');
     }
 
 }

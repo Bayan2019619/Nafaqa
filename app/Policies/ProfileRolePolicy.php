@@ -26,7 +26,7 @@ class ProfileRolePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('profileRole.viewAny');
+        return $user->can('profileRoles.viewAny');
     }
 
     /**
@@ -34,7 +34,7 @@ class ProfileRolePolicy
      */
     public function view(User $user, ProfileRole $profileRole)
     {
-        return ($user->id === $profileRole->user_id || $user->can('profileRole.view'));
+        return ($user->id === $profileRole->user_id || $user->can('profileRoles.view'));
     }
 
     /**
@@ -42,7 +42,7 @@ class ProfileRolePolicy
      */
     public function create(User $user)
     {
-        return $user->profileRole === null || $user->can('profileRole.create');
+        return $user->profileRole === null || $user->can('profileRoles.create');
     }
 
     /**
@@ -51,7 +51,7 @@ class ProfileRolePolicy
     public function update(User $user, ProfileRole $profileRole)
     {
 
-        return (($user->id === $profileRole->user_id && $profileRole->status == StatusEnum::Pending) || $user->can('profileRole.update'));
+        return (($user->id === $profileRole->user_id && $profileRole->status == StatusEnum::Pending) || $user->can('profileRoles.update'));
     }
 
     /**
@@ -59,7 +59,7 @@ class ProfileRolePolicy
      */
     public function delete(User $user, ProfileRole $profileRole)
     {
-        return ($user->can('profileRole.delete'));
+        return ($user->can('profileRoles.delete'));
     }
 
     /**
@@ -67,6 +67,7 @@ class ProfileRolePolicy
      */
     public function changeStatus(User $user, ProfileRole $profileRole)
     {
-        return $user->can('profileRole.status');
+        dd('toog');
+        return $user->can('profileRoles.status');
     }
 }
